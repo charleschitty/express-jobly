@@ -53,6 +53,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * - maxEmployees
  * - nameLike (will find case-insensitive, partial matches)
  *
+ * req.query -->
  * Authorization required: none
  */
 
