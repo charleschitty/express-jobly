@@ -1,5 +1,6 @@
 "use strict";
 
+const { BadRequestError, TypeError } = require("../expressError");
 const { sqlForPartialUpdate } = require("./sql");
 
 // const jwt = require("jsonwebtoken");
@@ -29,15 +30,30 @@ const { sqlForPartialUpdate } = require("./sql");
   describe("sqlForPartialUpdate", function(){
 
     test("works like a charm", function(){
-      const result = sqlForPartialUpdate({firstName: 'Aliya', age: 32},
-        {
-          firstName: "first_name",
-          age: "age"
-        });
+      const dataToUpdate = {firstName: 'Aliya', age: 32};
+      const jsToSql = {firstName: "first_name"}
+
+      const result = sqlForPartialUpdate(dataToUpdate, jsToSql);
 
       expect(result).toEqual({
         setCols:'"first_name"=$1, "age"=$2',
         values: ['Aliya', 32]
-      })
-    })
-  })
+      });
+    });
+
+    test("no data to update provided", function () {
+      const dataToUpdate = {};
+      const jsToSql = {firstName: "first_name"}
+
+      expect(sqlForPartialUpdate(dataToUpdate, jsToSql)).toThrow(BadRequestError)
+    });
+
+    // test("no mapping object provided", function () {
+    //   const dataToUpdate = {firstName: 'Aliya', age: 32};
+    //   try{
+    //     sqlForPartialUpdate(dataToUpdate);
+    //   }catch (err){
+    //     expect(err instanceof TypeError).toBeTruthy();
+    //   };
+    // });
+  });
