@@ -85,7 +85,43 @@ class Company {
    */
 
   static async findFiltered(params) {
-    throw new BadRequestError('Min cannot be greater than max');
+    if (params.minEmployees && params.maxEmployees) {
+      if (params.minEmployees > params.maxEmployees) {
+        throw new BadRequestError('Min cannot be greater than max');
+      };
+    };
+
+    const jsToSql = { nameLike: "name ILIKE $1",
+                      minEmployees: "numEmployees >= $2",
+                      maxEmployees: "numEmployees <= $3"
+                    }
+    const aaaa = jsToSql.values.join(", ");
+    const filterValues  = ['%' + params.nameLike + '%', params.minEmployees, params.maxEmployees]
+
+    const companiesRes = await db.query(`
+        SELECT handle,
+               name,
+               description,
+               num_employees AS "numEmployees",
+               logo_url      AS "logoUrl"
+        FROM companies
+        WHERE `,
+        filterValues,
+      );
+  }
+
+    static async getByName(name) {
+      const results = await db.query(
+          `SELECT id,
+                    first_name AS "firstName",
+                    last_name  AS "lastName",
+                    phone,
+                    notes
+             FROM customers
+             WHERE (first_name || ' ' || last_name) ILIKE $1
+             ORDER BY first_name, last_name`,
+          ['%' + name + '%'],
+      );
   }
 
   /** Given a company handle, return data about company.
