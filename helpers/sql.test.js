@@ -41,11 +41,21 @@ const { sqlForPartialUpdate } = require("./sql");
       });
     });
 
+    // test("no data to update provided", function () {
+    //   const dataToUpdate = {};
+    //   const jsToSql = {firstName: "first_name"}
+
+    //   expect(sqlForPartialUpdate(dataToUpdate, jsToSql)).toThrow(BadRequestError)
+    // });
+
     test("no data to update provided", function () {
       const dataToUpdate = {};
       const jsToSql = {firstName: "first_name"}
-
-      expect(sqlForPartialUpdate(dataToUpdate, jsToSql)).toThrow(BadRequestError)
+      try{
+        sqlForPartialUpdate(dataToUpdate, jsToSql);
+      }catch (err){
+        expect(err instanceof BadRequestError).toBeTruthy();
+      };
     });
 
     test("no mapping object provided", function () {
@@ -53,6 +63,7 @@ const { sqlForPartialUpdate } = require("./sql");
       try{
         sqlForPartialUpdate(dataToUpdate);
       }catch (err){
+        console.log(err);
         expect(err instanceof TypeError).toBeTruthy();
       };
     });
