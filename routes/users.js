@@ -25,7 +25,7 @@ const router = express.Router();
  *  {user: { username, firstName, lastName, email, isAdmin }, token }
  *
  * Authorization required: login
- **/
+ **/ //FIXME: no permissions check
 
 router.post("/", ensureLoggedIn, async function (req, res, next) {
   const validator = jsonschema.validate(
@@ -78,7 +78,7 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
  * Returns { username, firstName, lastName, email, isAdmin }
  *
  * Authorization required: login
- **/
+ **/ //FIXME: no permissions check
 
 router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
   const validator = jsonschema.validate(
@@ -99,7 +99,7 @@ router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
 /** DELETE /[username]  =>  { deleted: username }
  *
  * Authorization required: login
- **/
+ **/ //FIXME: no permissions check
 
 router.delete("/:username", ensureLoggedIn, async function (req, res, next) {
   await User.remove(req.params.username);

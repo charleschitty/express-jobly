@@ -55,6 +55,7 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
+
   static async findAll() {
     const companiesRes = await db.query(`
         SELECT handle,
@@ -65,6 +66,27 @@ class Company {
         FROM companies
         ORDER BY name`);
     return companiesRes.rows;
+  }
+
+  // UPDATE TO ACCEPT OPTIONAL FILTERING
+  // create a company schema to address optional fields ?***
+  // adjust the sql query based on the optional fields
+  // ROUTE >> needs to have a conditional based on optional params
+  //
+
+  /**
+   * Takes an object containing optional filters for the companies query
+   * {"nameLike", minEmployees, maxEmployees}
+   *
+   * Returns matching rows (companies) that meet the filter criteria
+   * [{company1}, {company2}, ...]
+   *
+   * TODO: should we use sqlPartialUpdate func from helpers for this?
+   */
+
+  static async getFiltered(params) {
+
+    return ;
   }
 
   /** Given a company handle, return data about company.

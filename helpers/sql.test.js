@@ -1,6 +1,6 @@
 "use strict";
 
-const { BadRequestError, TypeError } = require("../expressError");
+const { BadRequestError } = require("../expressError");
 const { sqlForPartialUpdate } = require("./sql");
 
 // const jwt = require("jsonwebtoken");
