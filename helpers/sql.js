@@ -17,12 +17,14 @@ const { BadRequestError } = require("../expressError");
  *
  * Example input:
  *
- * const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          numEmployees: "num_employees",
-          logoUrl: "logo_url",
-        });
+ * {column1: val1, column2: val2, }, {column1: column_1, column2 : column_2}
+ *
+ * Returns:
+ *
+ * {  setCols: '"column_1"=$1, "column_2"=$2',
+ *    values: [val1, val2, ...]
+ * }
+ *
  */
 
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {

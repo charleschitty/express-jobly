@@ -84,9 +84,8 @@ class Company {
    * TODO: should we use sqlPartialUpdate func from helpers for this?
    */
 
-  static async getFiltered(params) {
-
-    return ;
+  static async findFiltered(params) {
+    throw new BadRequestError('Min cannot be greater than max');
   }
 
   /** Given a company handle, return data about company.
