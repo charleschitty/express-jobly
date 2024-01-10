@@ -48,12 +48,12 @@ const { sqlForPartialUpdate } = require("./sql");
       expect(sqlForPartialUpdate(dataToUpdate, jsToSql)).toThrow(BadRequestError)
     });
 
-    // test("no mapping object provided", function () {
-    //   const dataToUpdate = {firstName: 'Aliya', age: 32};
-    //   try{
-    //     sqlForPartialUpdate(dataToUpdate);
-    //   }catch (err){
-    //     expect(err instanceof TypeError).toBeTruthy();
-    //   };
-    // });
+    test("no mapping object provided", function () {
+      const dataToUpdate = {firstName: 'Aliya', age: 32};
+      try{
+        sqlForPartialUpdate(dataToUpdate);
+      }catch (err){
+        expect(err instanceof TypeError).toBeTruthy();
+      };
+    });
   });
