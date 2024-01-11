@@ -198,13 +198,13 @@ describe("findFiltered", function () {
   test("works: no results", async function () {
     const filter = { nameLike: "c4", minEmployees: 1, maxEmployees:3 }
     let companies = await Company.findFiltered(filter);
-    expect(Object.keys(companies)).length.toEqual(0);
+    expect(Object.keys(companies).length).toEqual(0);
   });
 
   test("non-existent filters", async function () {
     const filter = { favoriteCactus: "c" }
     let companies = await Company.findFiltered(filter);
-    expect(Object.keys(companies)).length.toEqual(0);
+    expect(Object.keys(companies).length).toEqual(3);
   });
 
 });

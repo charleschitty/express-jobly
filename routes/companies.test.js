@@ -96,9 +96,6 @@ describe("GET /companies", function () {
     });
   });
 
-  //TODO: ? more route tests?
-  //TODO: should we change this and the one above to use mock functions?
-  // CURRENTLY MAKING REAL calls to Company.findAll()/findFiltered();
   test("GET /companies includes filters as anon", async function () {
     const query = "?nameLike=c&minEmployees=1&maxEmployees=2"
     const resp = await request(app)

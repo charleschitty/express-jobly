@@ -57,10 +57,17 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * Authorization required: none
  */
 
-
   // ROUTE >> needs to have a conditional based on optional params
   //
 router.get("/", async function (req, res, next) {
+  const { nameLike, minEmployees, maxEmployees } = req.query;
+  if (Object.keys(req.query).length !== 0) {
+    const companies = await Company.findFiltered({nameLike,
+                                                minEmployees,
+                                                maxEmployees
+                                              });
+    return res.json({ companies });
+  }
   const companies = await Company.findAll();
   return res.json({ companies });
 });

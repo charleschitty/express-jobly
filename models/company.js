@@ -68,11 +68,39 @@ class Company {
     return companiesRes.rows;
   }
 
-  // UPDATE TO ACCEPT OPTIONAL FILTERING
-  // create a company schema to address optional fields ?***
-  // adjust the sql query based on the optional fields
-  // ROUTE >> needs to have a conditional based on optional params
-  //
+
+  /** Takes an object of params and constructs arrays for WHERE clause
+   * and paramaterized query array for nameLike, minEmployees, and maxEmployees.
+   *
+   * Returns { whereString: "WHERE name ILIKE $1 ...", filterValues: ['c',...]}
+   */
+
+
+  static findFilteredSqlHelper(params){
+
+    const paramsForSql = [];
+    const filterValues  = [];
+    let whereString;
+
+    if(params.nameLike){
+      filterValues.push('%' + params.nameLike + '%');
+      paramsForSql.push(`name ILIKE $${filterValues.length}`)
+    }
+    if(params.minEmployees){
+      filterValues.push(params.minEmployees);
+      paramsForSql.push(`num_employees >= $${filterValues.length}`)
+    }
+    if(params.maxEmployees){
+      filterValues.push(params.maxEmployees);
+      paramsForSql.push(`num_employees <= $${filterValues.length}`)
+    }
+
+    if (paramsForSql.length > 0){
+      whereString = "WHERE  " + paramsForSql.join(" AND ");
+    }
+
+    return { whereString, filterValues }
+  }
 
   /**
    * Takes an object containing optional filters for the companies query
@@ -81,65 +109,25 @@ class Company {
    * Returns matching rows (companies) that meet the filter criteria
    * [{company1}, {company2}, ...]
    *
-   * TODO: should we use sqlPartialUpdate func from helpers for this?
    */
 
   static async findFiltered(params) {
     if (params.minEmployees && params.maxEmployees) {
       if (params.minEmployees > params.maxEmployees) {
-        throw new BadRequestError('Min cannot be greater than max');
+        throw new BadRequestError('Min cannot be greater than Max');
       };
     };
 
-    //map params to shape we need for SQL query
-    const jsToSql = { nameLike: "name ILIKE $",
-                      minEmployees: "numEmployees >= $",
-                      maxEmployees: "numEmployees <= $"
-                    }
-
-    // WHAT WE WANT: params run through ^ that mapping
-    // put those mapped values into an array, join it to create our string
-    // append that string to WHERE clause
-
-    // For every param we got, push the mapped valued into paramsForSql
-    const paramsForSql = [];
-    // for (const p in params){
-    //   if(jsToSql[p]){
-    //     paramsForSql.push(params[p]);
-    //   }
-    // }
-
-    // add % for nameLike and add other params to our parameterized array
-    const filterValues  = []
-    if(params.nameLike){
-      filterValues.push('%' + params.nameLike + '%');
-      paramsForSql.push(`name ILIKE $${filterValues.length}`)
-    }
-    if(params.minEmployees){
-      filterValues.push(params.minEmployees);
-      paramsForSql.push(`numEmployees >= $${filterValues.length}`)
-    }
-    if(params.maxEmployees){
-      filterValues.push(params.maxEmployees);
-      paramsForSql.push(`numEmployees <= $${filterValues.length}`)
-    }
-
-    for (let i = 0; i < filterValues.length; i++){
-      paramsForSql[i] += `${i+1}`
-    }
-
-    const whereString = paramsForSql.join(" AND ");
-
-    console.log("WHERE STRING",whereString)
+    const { whereString, filterValues } = this.findFilteredSqlHelper(params)
 
     const companiesRes = await db.query(`
         SELECT handle,
                name,
                description,
-               num_employees,
-               logo_url
+               num_employees AS "numEmployees",
+               logo_url AS "logoUrl"
         FROM companies
-        WHERE ${whereString}`,
+        ${whereString}`,
         filterValues
       );
 
