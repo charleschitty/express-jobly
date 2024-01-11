@@ -74,9 +74,11 @@ class Company {
    *
    * Returns { whereString: "WHERE name ILIKE $1 ...", filterValues: ['c',...]}
    */
+//FIXME: Steal findAll's SQL query (refactor findAll optional query)
+// if something passed into findAll (params) then run where clause and if present
+// add to SQL query in findAll otherwise no Where clause
 
-
-  static findFilteredSqlHelper(params){
+  static _findFilteredSqlHelper(params){
 
     const paramsForSql = [];
     const filterValues  = [];
@@ -118,7 +120,7 @@ class Company {
       };
     };
 
-    const { whereString, filterValues } = this.findFilteredSqlHelper(params)
+    const { whereString, filterValues } = this._findFilteredSqlHelper(params)
 
     const companiesRes = await db.query(`
         SELECT handle,

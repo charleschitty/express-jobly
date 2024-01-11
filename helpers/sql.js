@@ -12,9 +12,6 @@ const { BadRequestError } = require("../expressError");
  * Column names not present in jsToSql are included in the output with their
  * original names.
  *
- * Returns an object
- *  {setCols: "col1=$1, col2=$2, ..." , values: [val1, val2, ...]}
- *
  * Example input:
  *
  * {column1: val1, column2: val2, }, {column1: column_1, column2 : column_2}
@@ -23,7 +20,6 @@ const { BadRequestError } = require("../expressError");
  *
  * {  setCols: '"column_1"=$1, "column_2"=$2',
  *    values: [val1, val2, ...]
- * }
  *
  */
 

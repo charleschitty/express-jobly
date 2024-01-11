@@ -53,23 +53,24 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * - maxEmployees
  * - nameLike (will find case-insensitive, partial matches)
  *
- * req.query -->
  * Authorization required: none
  */
 
-  // ROUTE >> needs to have a conditional based on optional params
-  //
 router.get("/", async function (req, res, next) {
-  const { nameLike, minEmployees, maxEmployees } = req.query;
+
   if (Object.keys(req.query).length !== 0) {
-    const companies = await Company.findFiltered({nameLike,
-                                                minEmployees,
-                                                maxEmployees
-                                              });
+    const { nameLike, minEmployees, maxEmployees } = req.query;
+    const companies = await Company.findFiltered(
+      {
+        nameLike,
+        minEmployees,
+        maxEmployees
+      });
     return res.json({ companies });
   }
+
   const companies = await Company.findAll();
-  return res.json({ companies });
+  return res.json({ companies }); //FIXME: JSONSCHEMA VALIDATION --> cut off at route (max < min)
 });
 
 /** GET /[handle]  =>  { company }

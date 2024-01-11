@@ -97,9 +97,9 @@ describe("GET /companies", function () {
   });
 
   test("GET /companies includes filters as anon", async function () {
-    const query = "?nameLike=c&minEmployees=1&maxEmployees=2"
     const resp = await request(app)
-      .get(`/companies${query}`);
+      .get(`/companies`)
+      .query({ nameLike: "c", minEmployees: 1, maxEmployees: 2});
 
     expect(resp.body).toEqual({
       companies:
@@ -121,6 +121,8 @@ describe("GET /companies", function () {
         ],
     });
   });
+
+  //TODO: implement a fail case despite model testing for confirmation (especially jsonschema implementation)
 });
 
 /************************************** GET /companies/:handle */

@@ -7,17 +7,6 @@ const { sqlForPartialUpdate } = require("./sql");
 // const { createToken } = require("./tokens");
 // const { SECRET_KEY } = require("../config");
 
-// describe("createToken", function () {
-//   test("works: not admin", function () {
-//     const token = createToken({ username: "test", is_admin: false });
-//     const payload = jwt.verify(token, SECRET_KEY);
-//     expect(payload).toEqual({
-//       iat: expect.any(Number),
-//       username: "test",
-//       isAdmin: false,
-//     });
-//   });
-
   /**
    * Tests to write:
    *  No input provided, or empty input provided
@@ -29,7 +18,7 @@ const { sqlForPartialUpdate } = require("./sql");
 
   describe("sqlForPartialUpdate", function(){
 
-    test("works like a charm", function(){
+    test("works as intended", function(){
       const dataToUpdate = {firstName: 'Aliya', age: 32};
       const jsToSql = {firstName: "first_name"}
 
@@ -40,13 +29,6 @@ const { sqlForPartialUpdate } = require("./sql");
         values: ['Aliya', 32]
       });
     });
-
-    // test("no data to update provided", function () {
-    //   const dataToUpdate = {};
-    //   const jsToSql = {firstName: "first_name"}
-
-    //   expect(sqlForPartialUpdate(dataToUpdate, jsToSql)).toThrow(BadRequestError)
-    // });
 
     test("no data to update provided", function () {
       const dataToUpdate = {};

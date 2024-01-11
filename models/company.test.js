@@ -185,12 +185,8 @@ describe("findFiltered", function () {
     const filter = { nameLike: "c", minEmployees: 3, maxEmployees:2 };
 
     try {
-
       const result = await Company.findFiltered(filter);
-
     }catch(err){
-     //expect(err instanceof BadRequestError).toBeTruthy();
-
       expect(err.message).toEqual('Min cannot be greater than Max');
     }
   });
@@ -201,10 +197,10 @@ describe("findFiltered", function () {
     expect(Object.keys(companies).length).toEqual(0);
   });
 
-  test("non-existent filters", async function () {
+  test("non-existent filters", async function () { //FIXME: MAYBE ERROR
     const filter = { favoriteCactus: "c" }
     let companies = await Company.findFiltered(filter);
-    expect(Object.keys(companies).length).toEqual(3);
+    expect(Object.keys(companies).length).toEqual(3); //Equal whole set of companies
   });
 
 });
