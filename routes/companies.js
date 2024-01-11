@@ -8,7 +8,7 @@ const companyFiltersSchema = require("../schemas/companyFilters.json")
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureLoggedIn } = require("../middleware/auth");
+const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
 const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
@@ -26,7 +26,7 @@ const router = new express.Router();
  * Authorization required: login
  */
 
-router.post("/", ensureLoggedIn, async function (req, res, next) {
+router.post("/", ensureAdmin, async function (req, res, next) {
   const validator = jsonschema.validate(
     req.body,
     companyNewSchema,
@@ -62,23 +62,24 @@ router.get("/", async function (req, res, next) {
 
   //check if query exists in request
   if (Object.keys(req.query).length !== 0) {
-    //validate query matches schema
-    console.log("REQUEST QUERY", req.query);
-    //FIXME: WTF!?
-    req.query.minEmployees = Number(req.query.minEmployees)
-    req.query.maxEmployees = Number(req.query.maxEmployees)
 
-    console.log("req query after number conv", req.query);
+    //Note: Express ignores mutation attempts of req.queries
+    const query = { ...req.query };
+    if (req.query.minEmployees){
+      query.minEmployees = Number(req.query.minEmployees);
+    };
+    if (req.query.maxEmployees){
+      query.maxEmployees = Number(req.query.maxEmployees);
+    }
+
+    //validate query matches schema
     const validator = jsonschema.validate(
-      req.query,
+      query,
       companyFiltersSchema,
       {required: true}
     );
 
-
-    console.log("RESULT BEFORE IF STATEMENT", validator)
     if (!validator.valid){
-      console.log("RESULT BECAUSE NOT VALID", validator)
       const errs = validator.errors.map(err => err.stack);
       throw new BadRequestError(errs);
     }
@@ -122,17 +123,26 @@ router.get("/:handle", async function (req, res, next) {
  * Authorization required: login
  */
 
-router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.patch("/:handle", ensureAdmin, async function (req, res, next) {
+
+  const body = { ...req.body };
+  if (req.body.numEmployees){
+    body.numEmployees = Number(req.body.numEmployees);
+  }
+  console.log("body:", body);
+
   const validator = jsonschema.validate(
-    req.body,
+    body,
     companyUpdateSchema,
     {required:true}
   );
   if (!validator.valid) {
+    console.log("*******************");
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
   }
 
+  console.log("!!!!!!!!!!!!!!!!!!!!!");
   const company = await Company.update(req.params.handle, req.body);
   return res.json({ company });
 });
@@ -142,7 +152,7 @@ router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
  * Authorization: login
  */
 
-router.delete("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.delete("/:handle", ensureAdmin, async function (req, res, next) {
   await Company.remove(req.params.handle);
   return res.json({ deleted: req.params.handle });
 });
