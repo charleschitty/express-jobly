@@ -91,38 +91,62 @@ class Company {
       };
     };
 
-    const jsToSql = { nameLike: "name ILIKE $1",
-                      minEmployees: "numEmployees >= $2",
-                      maxEmployees: "numEmployees <= $3"
+    //map params to shape we need for SQL query
+    const jsToSql = { nameLike: "name ILIKE $",
+                      minEmployees: "numEmployees >= $",
+                      maxEmployees: "numEmployees <= $"
                     }
-    const aaaa = jsToSql.values.join(", ");
-    const filterValues  = ['%' + params.nameLike + '%', params.minEmployees, params.maxEmployees]
+
+    // WHAT WE WANT: params run through ^ that mapping
+    // put those mapped values into an array, join it to create our string
+    // append that string to WHERE clause
+
+    // For every param we got, push the mapped valued into paramsForSql
+    const paramsForSql = [];
+    // for (const p in params){
+    //   if(jsToSql[p]){
+    //     paramsForSql.push(params[p]);
+    //   }
+    // }
+
+    // add % for nameLike and add other params to our parameterized array
+    const filterValues  = []
+    if(params.nameLike){
+      filterValues.push('%' + params.nameLike + '%');
+      paramsForSql.push(`name ILIKE $${filterValues.length}`)
+    }
+    if(params.minEmployees){
+      filterValues.push(params.minEmployees);
+      paramsForSql.push(`numEmployees >= $${filterValues.length}`)
+    }
+    if(params.maxEmployees){
+      filterValues.push(params.maxEmployees);
+      paramsForSql.push(`numEmployees <= $${filterValues.length}`)
+    }
+
+    for (let i = 0; i < filterValues.length; i++){
+      paramsForSql[i] += `${i+1}`
+    }
+
+    const whereString = paramsForSql.join(" AND ");
+
+    console.log("WHERE STRING",whereString)
 
     const companiesRes = await db.query(`
         SELECT handle,
                name,
                description,
-               num_employees AS "numEmployees",
-               logo_url      AS "logoUrl"
+               num_employees,
+               logo_url
         FROM companies
-        WHERE `,
-        filterValues,
+        WHERE ${whereString}`,
+        filterValues
       );
+
+      return companiesRes.rows;
   }
 
-    static async getByName(name) {
-      const results = await db.query(
-          `SELECT id,
-                    first_name AS "firstName",
-                    last_name  AS "lastName",
-                    phone,
-                    notes
-             FROM customers
-             WHERE (first_name || ' ' || last_name) ILIKE $1
-             ORDER BY first_name, last_name`,
-          ['%' + name + '%'],
-      );
-  }
+
 
   /** Given a company handle, return data about company.
    *

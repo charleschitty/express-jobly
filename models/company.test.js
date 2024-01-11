@@ -183,14 +183,14 @@ describe("findFiltered", function () {
 
   test("error: minEmployees > maxEmployees", async function () {
     const filter = { nameLike: "c", minEmployees: 3, maxEmployees:2 };
-    console.log("FILTER HERE", filter);
+
     try {
-      debugger;
+
       const result = await Company.findFiltered(filter);
-      console.log("result HERE", result);
+
     }catch(err){
      //expect(err instanceof BadRequestError).toBeTruthy();
-      console.log("ERROR HERE", err);
+
       expect(err.message).toEqual('Min cannot be greater than Max');
     }
   });

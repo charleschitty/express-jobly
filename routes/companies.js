@@ -30,17 +30,17 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
     companyNewSchema,
     {required: true}
   );
-  console.log("validator,", validator);
+
 
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
   }
-  console.log("validator,", validator);
+
 
   const company = await Company.create(req.body);
 
-  console.log("company,", company)
+
 
   return res.status(201).json({ company });
 });
