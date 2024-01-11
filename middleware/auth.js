@@ -43,17 +43,27 @@ function ensureLoggedIn(req, res, next) {
 /** Middleware to use when they must be an admin.
  *
  * If not, raises Unauthorized. */
+
+//FIXME: added res.locals.user?.username (check if user exists b4 admin check)
 function ensureAdmin(req, res, next) {
-  if (res.locals.user?.isAdmin === true) return next();
+  if (res.locals.user?.username && res.locals.user?.isAdmin === true){
+   return next();
+  }
   throw new UnauthorizedError();
 }
 
 /** Middleware to use when they must be an admin or a specific user.
  *
  * If not, raises Unauthorized. */
+
 function ensureAdminOrSameUser(req,res,next){
   const currentUsername = res.locals.user?.username;
   const viewedUsername = req.params.username;
+
+  //FIXME:failing first here vs everywhere else we are not
+  // security --> fail always unless specific credentials
+  //if(res.locals.user?.isAdmin === true)...
+  //if(currentUsername && (currentUsername === viewedUsername))
 
   if(res.locals.user?.isAdmin !== true){
 

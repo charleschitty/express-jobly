@@ -41,8 +41,8 @@ describe("POST /companies", function () {
       company: newCompany,
     });
   });
-
-  test("bad request for non-admins", async function () {
+// FIXME: previously: "BAD request" vs Unauth
+  test("unauth for non-admins", async function () {
     const resp = await request(app)
       .post("/companies")
       .send(newCompany)
@@ -50,6 +50,7 @@ describe("POST /companies", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
   test("bad request with missing data", async function () {
     const resp = await request(app)
       .post("/companies")
@@ -61,7 +62,9 @@ describe("POST /companies", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("bad request with invalid data", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("bad request with invalid data for admin", async function () {
     const resp = await request(app)
       .post("/companies")
       .send({
@@ -138,7 +141,6 @@ describe("GET /companies", function () {
         .get('/companies')
         .query({ minEmployees: 0 });
     }catch(err){
-      console.log("ERRRRORROROROROR:", err);
       expect(err instanceof BadRequestError).tobeTruthy();
     };
   });
@@ -149,7 +151,6 @@ describe("GET /companies", function () {
         .get('/companies')
         .query({ maxEmployees: 0 });
     }catch(err){
-      console.log("ERRRRORROROROROR:", err);
       expect(err instanceof BadRequestError).tobeTruthy();
     };
   });
@@ -247,7 +248,9 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found on no such company", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("not found on no such company for admin", async function () {
     const resp = await request(app)
       .patch(`/companies/nope`)
       .send({
@@ -257,7 +260,9 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(404);
   });
 
-  test("bad request on handle change attempt", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("bad request on handle change attempt for admin", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
@@ -267,7 +272,9 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("bad request on invalid data", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("bad request on invalid data for admin", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
@@ -301,7 +308,9 @@ describe("DELETE /companies/:handle", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found for no such company", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("not found for no such company for admin", async function () {
     const resp = await request(app)
       .delete(`/companies/nope`)
       .set("authorization", `Bearer ${u1AdminToken}`);

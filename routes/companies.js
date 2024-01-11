@@ -8,7 +8,7 @@ const companyFiltersSchema = require("../schemas/companyFilters.json")
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureAdmin, ensureAdminOrSameUser } = require("../middleware/auth");
+const { ensureAdmin } = require("../middleware/auth");
 const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
@@ -39,11 +39,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
   }
-
-
   const company = await Company.create(req.body);
-
-
 
   return res.status(201).json({ company });
 });
@@ -132,7 +128,7 @@ router.patch("/:handle", ensureAdmin, async function (req, res, next) {
   const body = { ...req.body };
   if (req.body.numEmployees){
     body.numEmployees = Number(req.body.numEmployees);
-  }
+  };
 
   const validator = jsonschema.validate(
     body,
@@ -142,7 +138,7 @@ router.patch("/:handle", ensureAdmin, async function (req, res, next) {
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
-  }
+  };
 
   const company = await Company.update(req.params.handle, req.body);
   return res.json({ company });

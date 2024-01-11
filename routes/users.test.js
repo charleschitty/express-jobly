@@ -100,7 +100,9 @@ describe("POST /users", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("bad request if missing data", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("bad request if missing data for admin", async function () {
     const resp = await request(app)
         .post("/users")
         .send({
@@ -110,7 +112,9 @@ describe("POST /users", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("bad request if invalid data", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("bad request if invalid data for admin", async function () {
     const resp = await request(app)
         .post("/users")
         .send({
@@ -220,7 +224,9 @@ describe("GET /users/:username", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found if user not found", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("not found if user not found for admin", async function () {
     const resp = await request(app)
         .get(`/users/nope`)
         .set("authorization", `Bearer ${u1AdminToken}`);
@@ -286,7 +292,9 @@ describe("PATCH /users/:username", () => {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found if no such user", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("not found if no such user for admin", async function () {
     const resp = await request(app)
         .patch(`/users/nope`)
         .send({
@@ -296,7 +304,9 @@ describe("PATCH /users/:username", () => {
     expect(resp.statusCode).toEqual(404);
   });
 
-  test("bad request if invalid data", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("bad request if invalid data for admin", async function () {
     const resp = await request(app)
         .patch(`/users/u1`)
         .send({
@@ -306,7 +316,7 @@ describe("PATCH /users/:username", () => {
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("works: set new password", async function () {
+  test("works: set new password for same user", async function () {
     const resp = await request(app)
         .patch(`/users/u1`)
         .send({
@@ -357,7 +367,9 @@ describe("DELETE /users/:username", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found if user missing", async function () {
+  //FIXME: bad request with missing data -- FOR ADMIN (need unauth for anon + for user)
+
+  test("not found if user missing for admin", async function () {
     const resp = await request(app)
         .delete(`/users/nope`)
         .set("authorization", `Bearer ${u1AdminToken}`);

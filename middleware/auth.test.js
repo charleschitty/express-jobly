@@ -78,6 +78,13 @@ describe("ensureAdmin", function () {
     ensureAdmin(req, res, next);
   });
 
+  test("unauth if not admin", function () {
+    const req = {};
+    const res = { locals: { user: { username: "test", isAdmin: false } } };
+    expect(() => ensureAdmin(req, res, next))
+      .toThrow(UnauthorizedError);
+  });
+
   test("unauth if no login", function () {
     const req = {};
     const res = { locals: {} };
@@ -92,12 +99,6 @@ describe("ensureAdmin", function () {
       .toThrow(UnauthorizedError);
   });
 
-  test("unauth if not admin", function () {
-    const req = {};
-    const res = { locals: { user: { username: "test", isAdmin: false } } };
-    expect(() => ensureAdmin(req, res, next))
-      .toThrow(UnauthorizedError);
-  });
 });
 
 describe("ensureAdminOrSameUser", function () {
