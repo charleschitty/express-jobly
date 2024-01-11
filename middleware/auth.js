@@ -40,18 +40,33 @@ function ensureLoggedIn(req, res, next) {
   throw new UnauthorizedError();
 }
 
+/** Ensure this user is an admin */
 function ensureAdmin(req, res, next) {
   if (res.locals.user?.isAdmin === true) return next();
   throw new UnauthorizedError();
 }
 
-// function ensureCorrectUser(req, res, next) {
-//   if(res.local.user?.username === );
-// }
+//FIXME: needs tests
+/** Ensure this user is an Admin OR the same as user being viewed */
+function ensureAdminOrSameUser(req,res,next){
+  const currentUsername = res.locals.user?.username;
+  const viewedUsername = req.params.username;
+
+  if(res.locals.user?.isAdmin !== true){
+
+    if(!currentUsername || (currentUsername !== viewedUsername)){
+      throw new UnauthorizedError('Not authorized to view this user');
+    }
+
+  }
+
+  return next();
+}
 
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
-  ensureAdmin
+  ensureAdmin,
+  ensureAdminOrSameUser
 };

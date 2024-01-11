@@ -5,7 +5,8 @@ const { UnauthorizedError } = require("../expressError");
 const {
   authenticateJWT,
   ensureLoggedIn,
-  ensureAdmin
+  ensureAdmin,
+  ensureAdminOrSameUser
 } = require("./auth");
 
 
@@ -59,14 +60,14 @@ describe("ensureLoggedIn", function () {
     const req = {};
     const res = { locals: {} };
     expect(() => ensureLoggedIn(req, res, next))
-        .toThrow(UnauthorizedError);
+      .toThrow(UnauthorizedError);
   });
 
   test("unauth if no valid login", function () {
     const req = {};
-    const res = { locals: { user: { } } };
+    const res = { locals: { user: {} } };
     expect(() => ensureLoggedIn(req, res, next))
-        .toThrow(UnauthorizedError);
+      .toThrow(UnauthorizedError);
   });
 });
 
@@ -81,20 +82,57 @@ describe("ensureAdmin", function () {
     const req = {};
     const res = { locals: {} };
     expect(() => ensureAdmin(req, res, next))
-        .toThrow(UnauthorizedError);
+      .toThrow(UnauthorizedError);
   });
 
   test("unauth if no valid login", function () {
     const req = {};
-    const res = { locals: { user: { } } };
+    const res = { locals: { user: {} } };
     expect(() => ensureAdmin(req, res, next))
-        .toThrow(UnauthorizedError);
+      .toThrow(UnauthorizedError);
   });
 
   test("unauth if not admin", function () {
     const req = {};
     const res = { locals: { user: { username: "test", isAdmin: false } } };
     expect(() => ensureAdmin(req, res, next))
-        .toThrow(UnauthorizedError);
+      .toThrow(UnauthorizedError);
+  });
+});
+
+describe("ensureAdminOrSameUser", function () {
+  test("works if admin", function () {
+    //call the thing
+    //expect
+    //tobe
+    const req = { params: { username: "someUser" } };
+    const res = {
+      locals: {
+        user: {
+          username: "testAdmin", isAdmin: true
+        }
+      }
+    };
+    ensureAdminOrSameUser(req, res, next);
+  });
+
+
+  test("works if not admin but same user", function () {
+
+    const req = { params: {username: "test"}};
+    const res = { locals: { user: { username: "test", isAdmin: false } } };
+    ensureAdminOrSameUser(req, res, next);
+
+  });
+  test("fails if not admin", function () {
+
+  });
+
+  test("fails if not admin or same user", function () {
+
+  });
+
+  test("fails if anon", function () {
+
   });
 });

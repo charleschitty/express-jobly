@@ -5,7 +5,7 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
+const { ensureLoggedIn, ensureAdmin, ensureAdminOrSameUser } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
@@ -63,8 +63,11 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  *
  * Authorization required: login
  **/
+//FIXME: this needs tests (for new middleware)
 
-router.get("/:username", ensureLoggedIn, async function (req, res, next) {
+router.get("/:username",
+ensureAdminOrSameUser,
+async function (req, res, next) {
   const user = await User.get(req.params.username);
   return res.json({ user });
 });
