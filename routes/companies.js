@@ -3,6 +3,8 @@
 /** Routes for companies. */
 
 const jsonschema = require("jsonschema");
+const companyFiltersSchema = require("../schemas/companyFilters.json")
+
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
@@ -58,7 +60,30 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
 
+  //check if query exists in request
   if (Object.keys(req.query).length !== 0) {
+    //validate query matches schema
+    console.log("REQUEST QUERY", req.query);
+    //FIXME: WTF!?
+    req.query.minEmployees = Number(req.query.minEmployees)
+    req.query.maxEmployees = Number(req.query.maxEmployees)
+
+    console.log("req query after number conv", req.query);
+    const validator = jsonschema.validate(
+      req.query,
+      companyFiltersSchema,
+      {required: true}
+    );
+
+
+    console.log("RESULT BEFORE IF STATEMENT", validator)
+    if (!validator.valid){
+      console.log("RESULT BECAUSE NOT VALID", validator)
+      const errs = validator.errors.map(err => err.stack);
+      throw new BadRequestError(errs);
+    }
+
+    //schema is valid, pass query to Company method
     const { nameLike, minEmployees, maxEmployees } = req.query;
     const companies = await Company.findFiltered(
       {
@@ -70,7 +95,7 @@ router.get("/", async function (req, res, next) {
   }
 
   const companies = await Company.findAll();
-  return res.json({ companies }); //FIXME: JSONSCHEMA VALIDATION --> cut off at route (max < min)
+  return res.json({ companies });
 });
 
 /** GET /[handle]  =>  { company }

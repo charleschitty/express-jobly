@@ -12,6 +12,7 @@ const {
   commonAfterAll,
   u1Token,
 } = require("./_testCommon");
+const { BadRequestError } = require("../expressError");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -121,6 +122,18 @@ describe("GET /companies", function () {
         ],
     });
   });
+
+  test("Throws error if schema is not valid", async function(){
+
+    try{
+      await request(app)
+        .get('/companies)')
+        .query({minEmployees: 0 });
+    }catch(err){
+      expect(err instanceof BadRequestError).tobeTruthy();
+    }
+
+})
 
   //TODO: implement a fail case despite model testing for confirmation (especially jsonschema implementation)
 });

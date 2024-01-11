@@ -197,7 +197,7 @@ describe("findFiltered", function () {
     expect(Object.keys(companies).length).toEqual(0);
   });
 
-  test("non-existent filters", async function () { //FIXME: MAYBE ERROR
+  test("non-existent filters", async function () {
     const filter = { favoriteCactus: "c" }
     let companies = await Company.findFiltered(filter);
     expect(Object.keys(companies).length).toEqual(3); //Equal whole set of companies
