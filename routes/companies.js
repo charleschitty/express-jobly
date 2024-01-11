@@ -8,7 +8,7 @@ const companyFiltersSchema = require("../schemas/companyFilters.json")
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
+const { ensureAdmin, ensureAdminOrSameUser } = require("../middleware/auth");
 const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
@@ -23,10 +23,11 @@ const router = new express.Router();
  *
  * Returns { handle, name, description, numEmployees, logoUrl }
  *
- * Authorization required: login
+ * Authorization required: login (admin)
  */
 
 router.post("/", ensureAdmin, async function (req, res, next) {
+  console.log("POST route to /companies/ reached");
   const validator = jsonschema.validate(
     req.body,
     companyNewSchema,
@@ -59,6 +60,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
+  console.log("GET route to /companies/ reached");
 
   //check if query exists in request
   if (Object.keys(req.query).length !== 0) {
@@ -108,6 +110,7 @@ router.get("/", async function (req, res, next) {
  */
 
 router.get("/:handle", async function (req, res, next) {
+  console.log(`GET route to /companies/${req.params.handle} reached`);
   const company = await Company.get(req.params.handle);
   return res.json({ company });
 });
@@ -120,16 +123,16 @@ router.get("/:handle", async function (req, res, next) {
  *
  * Returns { handle, name, description, numEmployees, logo_url }
  *
- * Authorization required: login
+ * Authorization required: login (admin)
  */
 
 router.patch("/:handle", ensureAdmin, async function (req, res, next) {
+  console.log(`PATCH route to /companies/${req.params.handle} reached`);
 
   const body = { ...req.body };
   if (req.body.numEmployees){
     body.numEmployees = Number(req.body.numEmployees);
   }
-  console.log("body:", body);
 
   const validator = jsonschema.validate(
     body,
@@ -137,22 +140,22 @@ router.patch("/:handle", ensureAdmin, async function (req, res, next) {
     {required:true}
   );
   if (!validator.valid) {
-    console.log("*******************");
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
   }
 
-  console.log("!!!!!!!!!!!!!!!!!!!!!");
   const company = await Company.update(req.params.handle, req.body);
   return res.json({ company });
 });
 
 /** DELETE /[handle]  =>  { deleted: handle }
  *
- * Authorization: login
+ * Authorization: login (admin)
  */
 
 router.delete("/:handle", ensureAdmin, async function (req, res, next) {
+  console.log(`DELETE route to /companies/${req.params.handle} reached`);
+
   await Company.remove(req.params.handle);
   return res.json({ deleted: req.params.handle });
 });

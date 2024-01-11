@@ -42,6 +42,14 @@ describe("POST /companies", function () {
     });
   });
 
+  test("bad request for non-admins", async function () {
+    const resp = await request(app)
+      .post("/companies")
+      .send(newCompany)
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
   test("bad request with missing data", async function () {
     const resp = await request(app)
       .post("/companies")
@@ -62,14 +70,6 @@ describe("POST /companies", function () {
       })
       .set("authorization", `Bearer ${u1AdminToken}`);
     expect(resp.statusCode).toEqual(400);
-  });
-
-  test("bad request for non-admins", async function () {
-    const resp = await request(app)
-      .post("/companies")
-      .send(newCompany)
-      .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.statusCode).toEqual(401);
   });
 });
 
@@ -132,16 +132,26 @@ describe("GET /companies", function () {
     });
   });
 
-  test("Throws error if schema is not valid", async function(){
-
+  test("Throws error if schema is not valid (minEmployees", async function(){
     try{
       await request(app)
-        .get('/companies)')
-        .query({minEmployees: 0 });
+        .get('/companies')
+        .query({ minEmployees: 0 });
     }catch(err){
+      console.log("ERRRRORROROROROR:", err);
       expect(err instanceof BadRequestError).tobeTruthy();
     };
+  });
 
+  test("Throws error if schema is not valid (maxEmployees", async function(){
+    try{
+      await request(app)
+        .get('/companies')
+        .query({ maxEmployees: 0 });
+    }catch(err){
+      console.log("ERRRRORROROROROR:", err);
+      expect(err instanceof BadRequestError).tobeTruthy();
+    };
   });
 });
 
@@ -161,6 +171,21 @@ describe("GET /companies/:handle", function () {
     });
   });
 
+  test("works for logged-in (admin)", async function () {
+    const resp = await request(app)
+      .get(`/companies/c2`)
+      .set("authorization", `Bearer ${u1AdminToken}`);
+    expect(resp.body).toEqual({
+      company: {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+    });
+  });
+
   test("works for anon: company w/o jobs", async function () {
     const resp = await request(app).get(`/companies/c2`);
     expect(resp.body).toEqual({
@@ -173,6 +198,7 @@ describe("GET /companies/:handle", function () {
       },
     });
   });
+
 
   test("not found for no such company", async function () {
     const resp = await request(app).get(`/companies/nope`);

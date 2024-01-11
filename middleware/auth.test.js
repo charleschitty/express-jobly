@@ -102,9 +102,6 @@ describe("ensureAdmin", function () {
 
 describe("ensureAdminOrSameUser", function () {
   test("works if admin", function () {
-    //call the thing
-    //expect
-    //tobe
     const req = { params: { username: "someUser" } };
     const res = {
       locals: {
@@ -116,23 +113,30 @@ describe("ensureAdminOrSameUser", function () {
     ensureAdminOrSameUser(req, res, next);
   });
 
-
   test("works if not admin but same user", function () {
-
     const req = { params: {username: "test"}};
     const res = { locals: { user: { username: "test", isAdmin: false } } };
     ensureAdminOrSameUser(req, res, next);
-
-  });
-  test("fails if not admin", function () {
-
   });
 
-  test("fails if not admin or same user", function () {
-
+  test("unauth if not admin and diff user", function () {
+    const req = { params: {username: "test"}};
+    const res = { locals: { user: { username: "not-test", isAdmin: false }}};
+    expect(() => ensureAdmin(req, res, next))
+      .toThrow(UnauthorizedError);
   });
 
-  test("fails if anon", function () {
+  test("unauth if no valid login", function () {
+    const req = { params: {username: "test"}};
+    const res = { locals: { user: { }}};
+    expect(() => ensureAdmin(req, res, next))
+      .toThrow(UnauthorizedError);
+  });
 
+  test("unauth if no login", function () {
+    const req = {};
+    const res = { locals: {} };
+    expect(() => ensureAdmin(req, res, next))
+      .toThrow(UnauthorizedError);
   });
 });

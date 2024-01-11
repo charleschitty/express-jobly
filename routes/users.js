@@ -5,7 +5,7 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureLoggedIn, ensureAdmin, ensureAdminOrSameUser } = require("../middleware/auth");
+const { ensureAdmin, ensureAdminOrSameUser } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
@@ -24,10 +24,12 @@ const router = express.Router();
  * This returns the newly created user and an authentication token for them:
  *  {user: { username, firstName, lastName, email, isAdmin }, token }
  *
- * Authorization required: login
+ * Authorization required: login (admin)
  **/
 
 router.post("/", ensureAdmin, async function (req, res, next) {
+  console.log("POST request to /users/ reached");
+
   const validator = jsonschema.validate(
       req.body,
       userNewSchema,
@@ -48,10 +50,12 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  *
  * Returns list of all users.
  *
- * Authorization required: login
+ * Authorization required: login (admin)
  **/
 
 router.get("/", ensureAdmin, async function (req, res, next) {
+  console.log("GET request to /users/ reached");
+
   const users = await User.findAll();
   return res.json({ users });
 });
@@ -63,11 +67,9 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  *
  * Authorization required: login
  **/
-//FIXME: this needs tests (for new middleware)
 
-router.get("/:username",
-ensureAdminOrSameUser,
-async function (req, res, next) {
+router.get("/:username", ensureAdminOrSameUser,async function (req, res, next) {
+  console.log(`GET request to /users/${req.params.username} reached`);
   const user = await User.get(req.params.username);
   return res.json({ user });
 });
@@ -81,9 +83,11 @@ async function (req, res, next) {
  * Returns { username, firstName, lastName, email, isAdmin }
  *
  * Authorization required: login
- **/ //FIXME: no permissions check
+ **/
 
-router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
+router.patch("/:username", ensureAdminOrSameUser, async function (req, res, next) {
+  console.log(`PATCH request to /users/${req.params.username} reached`);
+
   const validator = jsonschema.validate(
       req.body,
       userUpdateSchema,
@@ -102,9 +106,11 @@ router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
 /** DELETE /[username]  =>  { deleted: username }
  *
  * Authorization required: login
- **/ //FIXME: no permissions check
+ **/
 
-router.delete("/:username", ensureLoggedIn, async function (req, res, next) {
+router.delete("/:username", ensureAdminOrSameUser, async function (req, res, next) {
+  console.log(`DELETE request to /users/${req.params.username} reached`);
+
   await User.remove(req.params.username);
   return res.json({ deleted: req.params.username });
 });

@@ -40,14 +40,17 @@ function ensureLoggedIn(req, res, next) {
   throw new UnauthorizedError();
 }
 
-/** Ensure this user is an admin */
+/** Middleware to use when they must be an admin.
+ *
+ * If not, raises Unauthorized. */
 function ensureAdmin(req, res, next) {
   if (res.locals.user?.isAdmin === true) return next();
   throw new UnauthorizedError();
 }
 
-//FIXME: needs tests
-/** Ensure this user is an Admin OR the same as user being viewed */
+/** Middleware to use when they must be an admin or a specific user.
+ *
+ * If not, raises Unauthorized. */
 function ensureAdminOrSameUser(req,res,next){
   const currentUsername = res.locals.user?.username;
   const viewedUsername = req.params.username;
@@ -56,9 +59,8 @@ function ensureAdminOrSameUser(req,res,next){
 
     if(!currentUsername || (currentUsername !== viewedUsername)){
       throw new UnauthorizedError('Not authorized to view this user');
-    }
-
-  }
+    };
+  };
 
   return next();
 }
