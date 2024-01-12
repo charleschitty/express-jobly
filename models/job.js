@@ -68,7 +68,7 @@ class Job {
   */
   static async get(id) {
     if (typeof id !== "number"){
-      throw new BadRequestError(`Not an id! Request an integer`)
+      throw new BadRequestError(`Nod an id! Job id must be integer`)
     };
 
     const jobRes = await db.query(`
@@ -91,7 +91,39 @@ class Job {
    *
    * auth : admin
   */
-  static async update() {
+  static async update(id, updateData) {
+    if(typeof id !== "number"){
+      throw new BadRequestError(`Not an id! Job id must be integer`);
+    }
+
+    const { setCols, values} = sqlForPartialUpdate(
+      updateData,
+      {
+        companyHandle : "company_handle"
+      });
+
+    const idVarIdx = "$" + (values.length + 1);
+    //debugger;
+    const querySql = `
+      UPDATE jobs
+      SET ${setCols}
+      WHERE id = ${idVarIdx}
+      RETURNING
+        id,
+        title,
+        salary,
+        equity,
+        company_handle AS "companyHandle"`;
+
+
+    const result = await db.query(querySql, [... values, id]);
+
+    //debugger;
+    const job = result.rows[0];
+
+    if (!job) throw new NotFoundError(`No such job: ${id}`);
+
+    return job;
 
   }
 

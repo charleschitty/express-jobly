@@ -31,7 +31,7 @@ describe("create", function () {
 
     expect(job).toEqual({
       ...newJob,
-      id: job.id
+      id: expect.any(Number)
     });
 
     const result = await db.query(
@@ -269,20 +269,23 @@ describe("update", function () {
   const updateData = {
       title: "new job1",
       salary: 500,
-      equity: .5
+      equity: "0.5"
   };
   const badUpdateData = {
     title: "new job1",
     salary: 500,
-    equity: .5,
+    equity: "0.5",
     company_handle: "c2"
 };
 
+
   test("works", async function () {
+    //debugger;
     let job = await Job.update(testJobIds.testJobId1, updateData);
     expect(job).toEqual({
       ...updateData,
-      company_handle: "c1"
+      companyHandle: "c1",
+      id: testJobIds.testJobId1
     });
 
     const result = await db.query(
@@ -292,8 +295,9 @@ describe("update", function () {
     expect(result.rows).toEqual([{
       title: "new job1",
       salary: 500,
-      equity: .5,
-      company_handle: "c1",
+      equity: "0.5",
+      companyHandle: "c1",
+      id: testJobIds.testJobId1
     }]);
   });
 
