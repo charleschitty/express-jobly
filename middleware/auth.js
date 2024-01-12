@@ -47,6 +47,7 @@ function ensureLoggedIn(req, res, next) {
 //FIXME: added res.locals.user?.username (check if user exists b4 admin check)
 function ensureAdmin(req, res, next) {
   if (res.locals.user?.username && res.locals.user?.isAdmin === true){
+
    return next();
   }
   throw new UnauthorizedError();

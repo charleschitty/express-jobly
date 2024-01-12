@@ -375,4 +375,19 @@ describe("DELETE /users/:username", function () {
         .set("authorization", `Bearer ${u1AdminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
+
+  test("unauth if user is not an admin", async function () {
+    const resp = await request(app)
+        .delete(`/users/nope`)
+        .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("unauth if user missing for anon", async function () {
+    const resp = await request(app)
+        .delete(`/users/nope`);
+
+    expect(resp.statusCode).toEqual(401);
+  });
+
 });
