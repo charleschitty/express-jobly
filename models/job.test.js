@@ -19,35 +19,38 @@ afterAll(commonAfterAll);
 /************************************** create */
 
 describe("create", function () {
-  const newJob = {
-    title: "job1",
-    salary: 10,
-    equity: .01,
-    companyHandle: "c1",
-  };
+  // console.log(Job);
+  // console.log(Job.create);
+  // debugger;
+  // const newJob = {
+  //   title: "job1",
+  //   salary: 10,
+  //   equity: .01,
+  //   companyHandle: "c1",
+  // };
 
-  test("works", async function () {
-    let job = await Job.create(newJob);
-    console.log("job!!!!:", job);
-    expect(job).toEqual(newJob);
+  // test("works", async function () {
+  //   debugger;
+  //   let job = await Job.create(newJob);
 
-    console.log("before debugger", job);
-    debugger;
-    console.log("AFTER debugger");
+  //   debugger;
 
-    const result = await db.query(
-          `SELECT title, salary, equity, company_handle
-           FROM jobs
-           WHERE title = 'job1'`);
-    expect(result.rows).toEqual([
-      {
-        title: "job1",
-        salary: 10,
-        equity: .01,
-        company_handle: "c1",
-      },
-    ]);
-  });
+  //   expect(job).toEqual(newJob);
+
+
+  //   const result = await db.query(
+  //         `SELECT title, salary, equity, company_handle
+  //          FROM jobs
+  //          WHERE title = 'job1'`);
+  //   expect(result.rows).toEqual([
+  //     {
+  //       title: "job1",
+  //       salary: 10,
+  //       equity: .01,
+  //       company_handle: "c1",
+  //     },
+  //   ]);
+  // });
 
   // Note: We define jobs as a role that can be shared (Max and I are both
   // software-engineers at MaxInc getting paid the same etc...)

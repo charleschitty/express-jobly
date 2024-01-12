@@ -21,7 +21,8 @@ class Job{
    * */
 
   static async create({ title, salary, equity, companyHandle }) {
-    debugger;
+    console.log("ARE WE ALIVE OR WHAT!!?!?!?!?!?")
+   // debugger;
     const result = await db.query(`
                 INSERT INTO jobs (title,
                                   salary,
@@ -56,14 +57,6 @@ class Job{
    * auth: any
   */
   static async get(){
-
-  }
-
-  /** create a new job
-   *
-   * auth : admin
-  */
-  static async create(){
 
   }
 
