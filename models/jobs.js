@@ -7,13 +7,41 @@ const { sqlForPartialUpdate } = require("../helpers/sql");
 
 /** Related functions for jobs */
 
+//TODO: currently no IDS returned
+
 class Job{
 
-  /**
-   *  create, update, delete, view jobs in database table jobs
+  /** Create a job (from data), update db, return new job data.
    *
-   */
+   * data should be { title, salary, equity, companyHandle }
+   *
+   * Returns { title, salary, equity, companyHandle }
+   *
+   * Throws BadRequestError if company already in database.
+   * */
 
+  static async create({ title, salary, equity, companyHandle }) {
+    const result = await db.query(`
+                INSERT INTO jobs (title,
+                                  salary,
+                                  equity,
+                                  company_handle)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING
+                    title,
+                    salary,
+                    equity,
+                    company_handle AS "companyHandle"`, [
+          title,
+          salary,
+          equity,
+          companyHandle,
+        ],
+    );
+    const job = result.rows[0];
+
+    return job;
+  };
 
   /** Get all jobs, optional filter paramaters may be provided
    *

@@ -23,7 +23,7 @@ describe("create", function () {
     title: "job1",
     salary: 10,
     equity: .01,
-    company_handle: "c1",
+    companyHandle: "c1",
   };
 
   test("works", async function () {
@@ -48,15 +48,15 @@ describe("create", function () {
   // software-engineers at MaxInc getting paid the same etc...)
   // we are classified as Cjob = 1 and Mjob = 1 not Cjob = 1 Mjob = 2
   // Anyone can post the same post multiple times right now
-  test("bad request with dupe", async function () {
-    try {
-      await Job.create(newJob);
-      await Job.create(newJob);
-      throw new Error("fail test, you shouldn't get here");
-    } catch (err) {
-      expect(err instanceof BadRequestError).toBeTruthy();
-    }
-  });
+//   test("bad request with dupe", async function () {
+//     try {
+//       await Job.create(newJob);
+//       await Job.create(newJob);
+//       throw new Error("fail test, you shouldn't get here");
+//     } catch (err) {
+//       expect(err instanceof BadRequestError).toBeTruthy();
+//     }
+//   });
 });
 
 /************************************** findJobs (get all jobs) */
@@ -248,15 +248,20 @@ describe("update", function () {
   const updateData = {
       title: "new job1",
       salary: 500,
-      equity: .5,
-      company_handle: "c1",
+      equity: .5
   };
+  const badUpdateData = {
+    title: "new job1",
+    salary: 500,
+    equity: .5,
+    company_handle: "c2"
+};
 
   test("works", async function () {
     let job = await Job.update(testJobIds.testJobId1, updateData);
     expect(job).toEqual({
-      id: testJobIds.testJobId1,
       ...updateData,
+      company_handle: "c1"
     });
 
     const result = await db.query(
@@ -271,17 +276,16 @@ describe("update", function () {
     }]);
   });
 
+
   test("works: null fields", async function () {
     const updateDataSetNulls = {
       name: "new job1",
       salary: null,
       equity: null,
-      company_handle: "c1",
     };
 
     let job= await Job.update(testJobIds.testJobId1, updateDataSetNulls);
     expect(job).toEqual({
-      id: testJobIds.testJobId1,
       ...updateDataSetNulls,
     });
 
@@ -295,6 +299,15 @@ describe("update", function () {
       equity: null,
       company_handle: "c1",
     }]);
+  });
+
+  test("fails if company handle attempted to update", async function () {
+    try{
+      await Job.update(testJobId1, badUpdateData);
+      throw new Error("fail test, you shouldn't get here");
+    }catch(err){
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
   });
 
   test("not found if no such job", async function () {

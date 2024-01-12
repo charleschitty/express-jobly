@@ -48,7 +48,7 @@ class Company {
     const company = result.rows[0];
 
     return company;
-  }
+  };
 
   /** Find all companies.
    *
