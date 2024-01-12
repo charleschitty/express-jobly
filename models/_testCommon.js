@@ -39,12 +39,14 @@ async function commonBeforeAll() {
     INSERT INTO jobs(title,salary,equity,company_handle)
     VALUES  ('j1', 10, .1, 'c1'),
             ('j2', 20, .2, 'c1'),
-            ('j3', 30, .3, 'c1')
-    RETURNING id`);
+            ('j3', 30, .3, 'c1'),
+            ('j4', 40, 0, 'c2')
+    RETURNING id`); // j4 has no equity
 
   testJobIds.testJobId1 = testJobsResult.rows[0].id;
   testJobIds.testJobId2 = testJobsResult.rows[1].id;
   testJobIds.testJobId3 = testJobsResult.rows[2].id;
+  testJobIds.testJobId4 = testJobsResult.rows[3].id;
 
 };
 

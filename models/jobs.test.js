@@ -59,11 +59,11 @@ describe("create", function () {
   });
 });
 
-/************************************** findAll */
+/************************************** findJobs (get all jobs) */
 
-describe("findAll", function () {
+describe("findJobs", function () {
   test("works: no filter", async function () {
-    let jobs = await Job.findAll();
+    let jobs = await Job.findJobs();
     expect(jobs).toEqual([
       {
         title: "job1",
@@ -83,9 +83,138 @@ describe("findAll", function () {
         equity: .03,
         company_handle: "c1",
       },
+      {
+        title: "job4",
+        salary: 40,
+        equity: '0',
+        company_handle: "c2",
+      },
     ]);
   });
-});
+
+  test("works: one filters", async function(){
+    const filter = { minSalary: 20 };
+
+    const response = await Job.findJobs(filter);
+    expect(response).toEqual([
+      {
+        title: "job2",
+        salary: 20,
+        equity: '.02',
+        company_handle: "c1",
+      },
+      {
+        title: "job3",
+        salary: 30,
+        equity:'.03',
+        company_handle: "c1",
+      },
+      {
+        title: "job4",
+        salary: 40,
+        equity: '0',
+        company_handle: "c2",
+      },
+    ]);
+  });
+
+
+
+  test("works: two filters", async function(){
+    const filter = { minSalary: 20, hasEquity: true };
+
+    const response = await Job.findJobs(filter);
+    expect(response).toEqual([
+      {
+        title: "job2",
+        salary: 20,
+        equity: .02,
+        company_handle: "c1",
+      },
+      {
+        title: "job3",
+        salary: 30,
+        equity: .03,
+        company_handle: "c1",
+      },
+    ]);
+  });
+
+  test("works: all filters", async function(){
+    const filter = { title: "job4", minSalary: 20, hasEquity: false };
+
+    const response = await Job.findJobs(filter);
+    expect(response).toEqual([
+      {
+        title: "job4",
+        salary: 40,
+        equity: '0',
+        company_handle: "c2",
+      },
+    ]);
+  });
+
+  test("no results", async function(){
+    const filter = { title: "job666"};
+    const response = await Job.findJobs(filter);
+    expect(Object.keys(response).length).toEqual(0);
+
+  })
+
+  test("error: minSalary is negative", async function(){
+    const filter = { minSalary: -20 };
+
+    expect(()=> Job.findJobs(filter))
+      .toThrow(BadRequestError);
+  })
+
+  test("error: equity is negative", async function(){
+    const filter = { equity: -20 };
+
+    expect(()=> Job.findJobs(filter))
+      .toThrow(BadRequestError);
+  })
+
+
+  test("non-existent filters", async function(){
+    const filter = { LeastFavCactus: 'garfield' };
+
+    const response = await Job.findJobs(filter);
+    expect(response).toEqual([
+      {
+        title: "job1",
+        salary: 10,
+        equity: '.01',
+        company_handle: "c1",
+      },
+      {
+        title: "job2",
+        salary: 20,
+        equity: '.02',
+        company_handle: "c1",
+      },
+      {
+        title: "job3",
+        salary: 30,
+        equity:'.03',
+        company_handle: "c1",
+      },
+      {
+        title: "job4",
+        salary: 40,
+        equity: '0',
+        company_handle: "c2",
+      },
+    ]);
+
+  })
+
+}); /** END DESCRIBE BLOCK */
+
+
+
+
+
 
 /************************************** get */
 
@@ -185,6 +314,7 @@ describe("update", function () {
       expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
+
 });
 
 /************************************** remove */
