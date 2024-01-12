@@ -20,10 +20,8 @@ class Job{
    * Throws BadRequestError if company already in database.
    * */
 
-  //this is a new comment
   static async create({ title, salary, equity, companyHandle }) {
-    console.log("ARE WE ALIVE OR WHAT!!?!?!?!?!?")
-   // debugger;
+
     const result = await db.query(`
                 INSERT INTO jobs (title,
                                   salary,

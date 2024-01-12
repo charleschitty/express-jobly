@@ -19,38 +19,30 @@ afterAll(commonAfterAll);
 /************************************** create */
 
 describe("create", function () {
-  // console.log(Job);
-  // console.log(Job.create);
-  // debugger;
-  // const newJob = {
-  //   title: "job1",
-  //   salary: 10,
-  //   equity: .01,
-  //   companyHandle: "c1",
-  // };
+  const newJob = {
+    title: "job1",
+    salary: 10,
+    equity: "0.01",
+    companyHandle: "c1",
+  };
 
-  // test("works", async function () {
-  //   debugger;
-  //   let job = await Job.create(newJob);
+  test("works", async function () {
+    let job = await Job.create(newJob);
+    expect(job).toEqual(newJob);
 
-  //   debugger;
-
-  //   expect(job).toEqual(newJob);
-
-
-  //   const result = await db.query(
-  //         `SELECT title, salary, equity, company_handle
-  //          FROM jobs
-  //          WHERE title = 'job1'`);
-  //   expect(result.rows).toEqual([
-  //     {
-  //       title: "job1",
-  //       salary: 10,
-  //       equity: .01,
-  //       company_handle: "c1",
-  //     },
-  //   ]);
-  // });
+    const result = await db.query(
+          `SELECT title, salary, equity, company_handle
+           FROM jobs
+           WHERE title = 'job1'`);
+    expect(result.rows).toEqual([
+      {
+        title: "job1",
+        salary: 10,
+        equity: "0.01", //FIXME: note the string
+        company_handle: "c1",
+      },
+    ]);
+  });
 
   // Note: We define jobs as a role that can be shared (Max and I are both
   // software-engineers at MaxInc getting paid the same etc...)
