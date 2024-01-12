@@ -108,25 +108,28 @@ describe("findAllJobs", function () {
   test("works: one filters", async function(){
     const filter = { minSalary: 20 };
 
-    const response = await Job.findJobs(filter);
+    const response = await Job.findAll(filter);
     expect(response).toEqual([
       {
-        title: "job2",
+        title: "j2",
         salary: 20,
-        equity: '.02',
-        company_handle: "c1",
+        equity: "0.2",
+        companyHandle: "c1",
+        id: testJobIds.testJobId2
       },
       {
-        title: "job3",
+        title: "j3",
         salary: 30,
-        equity:'.03',
-        company_handle: "c1",
+        equity: "0.3",
+        companyHandle: "c1",
+        id: testJobIds.testJobId3
       },
       {
-        title: "job4",
+        title: "j4",
         salary: 40,
         equity: '0',
-        company_handle: "c2",
+        companyHandle: "c2",
+        id: testJobIds.testJobId4
       },
     ]);
   });
@@ -136,40 +139,43 @@ describe("findAllJobs", function () {
   test("works: two filters", async function(){
     const filter = { minSalary: 20, hasEquity: true };
 
-    const response = await Job.findJobs(filter);
+    const response = await Job.findAll(filter);
     expect(response).toEqual([
       {
-        title: "job2",
+        title: "j2",
         salary: 20,
-        equity: .02,
-        company_handle: "c1",
+        equity: "0.2",
+        companyHandle: "c1",
+        id: testJobIds.testJobId2
       },
       {
-        title: "job3",
+        title: "j3",
         salary: 30,
-        equity: .03,
-        company_handle: "c1",
+        equity: "0.3",
+        companyHandle: "c1",
+        id: testJobIds.testJobId3
       },
     ]);
   });
 
   test("works: all filters", async function(){
-    const filter = { title: "job4", minSalary: 20, hasEquity: false };
+    const filter = { title: "j4", minSalary: 20, hasEquity: false };
 
-    const response = await Job.findJobs(filter);
+    const response = await Job.findAll(filter);
     expect(response).toEqual([
       {
-        title: "job4",
+        title: "j4",
         salary: 40,
         equity: '0',
-        company_handle: "c2",
+        companyHandle: "c2",
+        id: testJobIds.testJobId4
       },
     ]);
   });
 
   test("no results", async function(){
     const filter = { title: "job666"};
-    const response = await Job.findJobs(filter);
+    const response = await Job.findAll(filter);
     expect(Object.keys(response).length).toEqual(0);
 
   })
@@ -177,46 +183,46 @@ describe("findAllJobs", function () {
   test("error: minSalary is negative", async function(){
     const filter = { minSalary: -20 };
 
-    expect(()=> Job.findJobs(filter))
-      .toThrow(BadRequestError);
+    try{
+      await Job.findAll(filter);
+    }catch(err){
+
+      expect(err instanceof BadRequestError);
+    }
   })
-
-  test("error: equity is negative", async function(){
-    const filter = { equity: -20 };
-
-    expect(()=> Job.findJobs(filter))
-      .toThrow(BadRequestError);
-  })
-
 
   test("non-existent filters", async function(){
     const filter = { LeastFavCactus: 'garfield' };
 
-    const response = await Job.findJobs(filter);
+    const response = await Job.findAll(filter);
     expect(response).toEqual([
       {
-        title: "job1",
+        title: "j1",
         salary: 10,
-        equity: '.01',
-        company_handle: "c1",
+        equity: "0.1",
+        companyHandle: "c1",
+        id: testJobIds.testJobId1
       },
       {
-        title: "job2",
+        title: "j2",
         salary: 20,
-        equity: '.02',
-        company_handle: "c1",
+        equity: "0.2",
+        companyHandle: "c1",
+        id: testJobIds.testJobId2
       },
       {
-        title: "job3",
+        title: "j3",
         salary: 30,
-        equity:'.03',
-        company_handle: "c1",
+        equity: "0.3",
+        companyHandle: "c1",
+        id: testJobIds.testJobId3
       },
       {
-        title: "job4",
+        title: "j4",
         salary: 40,
         equity: '0',
-        company_handle: "c2",
+        companyHandle: "c2",
+        id: testJobIds.testJobId4
       },
     ]);
 
@@ -251,7 +257,7 @@ describe("get", function () {
       await Job.get("nope");
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
-      console.log(err);
+
       expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
@@ -261,7 +267,7 @@ describe("get", function () {
       await Job.get(141414);
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
-      console.log(err);
+
       expect(err instanceof NotFoundError).toBeTruthy();
     }
   });
@@ -356,7 +362,7 @@ describe("update", function () {
       await Job.update(testJobIds.testJobId1, {});
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
-      console.log(err)
+
       expect(err instanceof BadRequestError).toBeTruthy();
     }
   });

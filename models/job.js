@@ -99,13 +99,14 @@ static _findFilteredSqlHelper(params){
   static async findAll(filters) {
     let whereString;
     let filterValues;
-
     if (filters){
-      console.log("*****I AM GETTING FILTERED **********");
-      whereString, filterValues = this._findFilteredSqlHelper(params)
+      if (filters.minSalary < 0) throw new BadRequestError('Salary must be positive');
+
+      let returned = this._findFilteredSqlHelper(filters)
+      whereString = returned.whereString;
+      filterValues = returned.filterValues;
     };
-    console.log("WHERE STRING:", whereString);
-    console.log("FILTER VALUES:", filterValues);
+
 
     const jobsRes = await db.query(`
         SELECT id,
@@ -115,7 +116,9 @@ static _findFilteredSqlHelper(params){
                company_handle AS "companyHandle"
         FROM jobs
         ${whereString}
-        ORDER BY id, companyHandle`, filterValues); //TODO: why does company_handle fail
+        ORDER BY id, company_handle`, filterValues);
+        //TODO: why does companyHandle fail, doesn't ORDER BY run *after* SELECT?
+        // we can't access the aliased column name?
     return jobsRes.rows;
   };
 
