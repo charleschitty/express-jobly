@@ -9,7 +9,7 @@ const { sqlForPartialUpdate } = require("../helpers/sql");
 
 //TODO: currently no IDS returned
 
-class Job{
+class Job {
 
   /** Create a job (from data), update db, return new job data.
    *
@@ -22,6 +22,16 @@ class Job{
 
   static async create({ title, salary, equity, companyHandle }) {
 
+    const companyExists = await db.query(`
+        SELECT handle
+        FROM companies
+        WHERE handle = $1`, [companyHandle]);
+
+    if (!companyExists.rows[0]) {
+      throw new BadRequestError(`No such company: ${companyHandle}`);
+    };
+
+
     const result = await db.query(`
                 INSERT INTO jobs (title,
                                   salary,
@@ -29,15 +39,16 @@ class Job{
                                   company_handle)
                 VALUES ($1, $2, $3, $4)
                 RETURNING
+                    id,
                     title,
                     salary,
                     equity,
                     company_handle AS "companyHandle"`, [
-          title,
-          salary,
-          equity,
-          companyHandle,
-        ],
+      title,
+      salary,
+      equity,
+      companyHandle,
+    ],
     );
     const job = result.rows[0];
 
@@ -48,22 +59,39 @@ class Job{
    *
    * auth: any
   */
-  static async findAll(filters){
+  static async findAll(filters) {
 
   }
   /** return details on specific job
    *
    * auth: any
   */
-  static async get(){
+  static async get(id) {
+    if (typeof id !== "number"){
+      throw new BadRequestError(`Not an id! Request an integer`)
+    };
 
-  }
+    const jobRes = await db.query(`
+      SELECT id,
+             title,
+             salary,
+             equity,
+             company_handle AS "companyHandle"
+      FROM jobs
+      WHERE id = $1`, [id]);
+
+    const job = jobRes.rows[0];
+
+    if (!job) throw new NotFoundError(`No job: ${id}`);
+
+    return job;
+  };
 
   /** update a job in db
    *
    * auth : admin
   */
-  static async update(){
+  static async update() {
 
   }
 
@@ -71,7 +99,7 @@ class Job{
    *
    * auth : admin
   */
-  static async remove(){
+  static async remove() {
 
   }
 
