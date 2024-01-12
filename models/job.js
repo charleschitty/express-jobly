@@ -21,12 +21,13 @@ class Job{
    * */
 
   static async create({ title, salary, equity, companyHandle }) {
+    debugger;
     const result = await db.query(`
                 INSERT INTO jobs (title,
                                   salary,
                                   equity,
                                   company_handle)
-                VALUES ($1, $2, $3, $4, $5)
+                VALUES ($1, $2, $3, $4)
                 RETURNING
                     title,
                     salary,
@@ -83,3 +84,5 @@ class Job{
   }
 
 }
+
+module.exports = Job;
