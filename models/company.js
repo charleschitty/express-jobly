@@ -87,22 +87,22 @@ class Company {
     if(params.nameLike){
       filterValues.push('%' + params.nameLike + '%');
       paramsForSql.push(`name ILIKE $${filterValues.length}`)
-    }
+    };
     if(params.minEmployees){
       filterValues.push(params.minEmployees);
       paramsForSql.push(`num_employees >= $${filterValues.length}`)
-    }
+    };
     if(params.maxEmployees){
       filterValues.push(params.maxEmployees);
       paramsForSql.push(`num_employees <= $${filterValues.length}`)
-    }
+    };
 
     if (paramsForSql.length > 0){
       whereString = "WHERE  " + paramsForSql.join(" AND ");
-    }
+    };
 
     return { whereString, filterValues }
-  }
+  };
 
   /**
    * Takes an object containing optional filters for the companies query
